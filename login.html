@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* Estilos base */
+    input[type=submit] {
+      background-color: #04AA6D;
+      color: white;
+      display: none; /* Oculto por defecto */
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .container { background-color: #f1f1f1; padding: 20px; }
+
+    /* Estilos para los paneles de validación */
+    #psw_message, #name_message {
+      display: none;
+      background: #f1f1f1;
+      color: #000;
+      padding: 20px;
+      margin-top: 10px;
+    }
+
+    p { padding: 5px 35px; font-size: 18px; margin: 5px 0; }
+    .valid { color: green; }
+    .valid:before { position: relative; left: -35px; content: "✔"; }
+    .invalid { color: red; }
+    .invalid:before { position: relative; left: -35px; content: "✖"; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <form action="./pelis.html">
+      <label for="nom">Nom</label><br>
+      <input type="text" id="nom" name="nom" required><br><br>
+
+      <label for="psw">Contrasenya</label><br>
+      <input type="password" id="psw" name="psw" required><br><br>
+      
+      <input type="checkbox" id="camp_check">
+      <label for="camp_check">Mostrar contrasenya</label><br><br>
+
+      <input type="submit" id="submit_btn" value="Enviar">
+    </form>
+  </div>
+
+  <div id="name_message">
+    <h3>El nom ha de tenir:</h3>
+    <p id="name_at" class="invalid"> Una @ </p>
+  </div>
+
+  <div id="psw_message">
+    <h3>La contrasenya ha de tenir:</h3>
+    <p id="letter" class="invalid"> Una lletra <b>minuscula</b></p>
+    <p id="capital" class="invalid">Una lletra <b>majuscula</b></p>
+    <p id="number" class="invalid">Un <b>numero</b></p>
+    <p id="length" class="invalid">Minimo <b>8 caracteres</b></p>
+  </div>
+
+  <script>
+// Usamos const para elementos del DOM porque la referencia al nodo no cambia
+const myInput = document.getElementById("psw");
+const myName = document.getElementById("nom");
+const checkBtn = document.getElementById("camp_check");
+const submitBtn = document.getElementById("submit_btn");
+
+// Paneles de mensajes
+const nameMsg = document.getElementById("name_message");
+const pswMsg = document.getElementById("psw_message");
+
+// Requisitos individuales
+const nameAt = document.getElementById("name_at");
+const letter = document.getElementById("letter");
+const capital = document.getElementById("capital");
+const number = document.getElementById("number");
+const length = document.getElementById("length");
+
+// 1. Lógica del Checkbox (Mostrar/Ocultar contraseña)
+checkBtn.addEventListener('change', () => {
+    myInput.type = checkBtn.checked ? "text" : "password";
+});
+
+// 2. Control de visibilidad de paneles (Focus/Blur)
+// Usamos funciones de flecha (arrow functions) para un código más compacto
+myName.onfocus = () => nameMsg.style.display = "block";
+myName.onblur = () => nameMsg.style.display = "none";
+
+myInput.onfocus = () => pswMsg.style.display = "block";
+myInput.onblur = () => pswMsg.style.display = "none";
+
+// 3. Función de validación principal
+const validateForm = () => {
+    const val = myInput.value;
+    const nameVal = myName.value;
+
+    // Validación del nombre (contiene @)
+    const isNameValid = nameVal.includes("@");
+    updateStatus(nameAt, isNameValid);
+
+    // Validación de la contraseña con RegEx
+    const hasLower = /[a-z]/.test(val);
+    const hasUpper = /[A-Z]/.test(val);
+    const hasNum = /[0-9]/.test(val);
+    const hasLen = val.length >= 8;
+
+    // Actualizar estados visuales
+    updateStatus(letter, hasLower);
+    updateStatus(capital, hasUpper);
+    updateStatus(number, hasNum);
+    updateStatus(length, hasLen);
+
+    // 4. Mostrar botón Submit solo si TODO es verdadero
+    if (isNameValid && hasLower && hasUpper && hasNum && hasLen) {
+        submitBtn.style.display = "block";
+    } else {
+        submitBtn.style.display = "none";
+    }
+};
+
+// Función auxiliar para evitar repetir código 
+const updateStatus = (element, condition) => {
+    if (condition) {
+        element.classList.replace("invalid", "valid");
+    } else {
+        element.classList.replace("valid", "invalid");
+    }
+};
+
+// Escuchar eventos de escritura
+myName.addEventListener('keyup', validateForm);
+myInput.addEventListener('keyup', validateForm);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Col·lecció de pel·lícules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* Contenedor de búsqueda */
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+        }
+
+        #cerca {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        /* Grid de películas */
+        #movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tarjeta de película */
+        .movie-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .movie-card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .movie-card p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .movie-card span {
+            font-weight: bold;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Col·lecció de pel·lícules</h1>
+
+    <div class="search-container">
+        <input type="text" id="cerca">
+        <br>
+        <button id="btn-cerca">Cerca</button>
+    </div>
+
+    <div id="movie-grid">
+        </div>
+
+    <script src="infopelis.js"></script>
+    <script>
+
+        const grid = document.getElementById('movie-grid');
+        const searchInput = document.getElementById('cerca');
+        const searchBtn = document.getElementById('btn-cerca');
+
+        // Función para renderizar las tarjetas
+        const renderMovies = (moviesList) => {
+            grid.innerHTML = ''; // Limpiar el grid antes de renderizar
+            
+            moviesList.forEach(movie => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <h2>${movie.title}</h2>
+                    <p><span>Year:</span> ${movie.year}</p>
+                    <p><span>Style:</span> ${movie.genre}</p>
+                    <p><span>Director:</span> ${movie.director}</p>
+                    <p><span>Actors:</span> ${movie.actors}</p>
+                    <p><span>Oscars:</span> ${movie.oscars}</p>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        // Función de búsqueda avanzada
+        const performSearch = () => {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (query === "") {
+                renderMovies(pelicules);
+                return;
+            }
+
+            const filtered = pelicules.filter(movie => {
+                // Buscamos en todos los campos del objeto
+                return Object.values(movie).some(value => 
+                    String(value).toLowerCase().includes(query)
+                );
+            });
+
+            renderMovies(filtered);
+        };
+
+        // Eventos
+        searchBtn.addEventListener('click', performSearch);
+        
+        // Búsqueda en tiempo real mientras se escribe
+        searchInput.addEventListener('keyup', performSearch);
+
+        // Carga inicial (mostrar todas)
+        renderMovies(pelicules);
+
+    </script>
+</body>
+</html>
